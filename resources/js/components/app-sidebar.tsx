@@ -10,7 +10,8 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, user } from '@/routes';
+import { dashboard } from '@/routes';
+import {index as userList} from '@/routes/users/index'
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { BookOpen, Folder, LayoutGrid, Users } from 'lucide-react';
@@ -24,7 +25,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'User',
-        href: user(),
+        href: userList(),
         icon: Users,
         permissions: ['user-read']
     },

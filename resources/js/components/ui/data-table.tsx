@@ -1,8 +1,10 @@
-import React, { useState, useMemo, useCallback, ChangeEvent, KeyboardEvent } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useDebounce } from '@/hooks/use-debounce';
+import { PaginatedData, PaginatedFilter } from '@/types';
+import { router } from '@inertiajs/react';
 
 interface Column<T> {
   key: keyof T;
@@ -12,82 +14,32 @@ interface Column<T> {
 }
 
 interface DataTableProps<T> {
-  data: T[];
+  data: PaginatedData<T>;
   columns: Column<T>[];
-  initialPageSize?: number;
   pageSizeOptions?: number[];
   variant?: 'default' | 'striped' | 'bordered';
   className?: string;
   searchPlaceholder?: string;
-  onSearch?: (searchTerm: string) => void;
-  darkMode?: boolean;
+  filter: PaginatedFilter;
 }
 
 export function DataTable<T extends { [key: string]: any }>({
   data,
   columns,
-  initialPageSize = 10,
   pageSizeOptions = [5, 10, 20, 50],
   variant = 'default',
   className = '',
   searchPlaceholder = 'Search...',
-  onSearch,
-  darkMode = false,
+  filter
 }: DataTableProps<T>) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(initialPageSize);
-
-  const filteredData = useMemo(() => {
-    if (!debouncedSearchTerm) return data;
-    const lowerSearch = debouncedSearchTerm.toLowerCase();
-    return data.filter((item) =>
-      columns.some((col) => {
-        const value = item[col.key];
-        if (value === undefined || value === null) return false;
-        return String(value).toLowerCase().includes(lowerSearch);
-      })
-    );
-  }, [debouncedSearchTerm, data, columns]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
-
-  const currentPageData = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredData.slice(start, start + pageSize);
-  }, [filteredData, currentPage, pageSize]);
-
-  const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-    if (onSearch) onSearch(e.target.value);
-  }, [onSearch]);
-
-  const handlePageSizeChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-    setPageSize(Number(e.target.value));
-    setCurrentPage(1);
-  }, []);
-
-  const handlePageChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    let page = Number(e.target.value);
-    if (isNaN(page) || page < 1) page = 1;
-    else if (page > totalPages) page = totalPages;
-    setCurrentPage(page);
-  }, [totalPages]);
-
-  const handlePageInputKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      const target = e.target as HTMLInputElement;
-      let page = Number(target.value);
-      if (isNaN(page) || page < 1) page = 1;
-      else if (page > totalPages) page = totalPages;
-      setCurrentPage(page);
-      target.blur();
-    }
-  }, [totalPages]);
-
-  // Variant classes
+  const handleSearchChange = useDebounce((e) => {
+    console.log(e.target.value)
+router.get(
+      data.path,
+      { search: e.target.value, perPage: filter?.perPage, page: data.current_page },
+      { preserveState: true })
+  }, 300);
+  
   const variantClasses = {
     default: 'bg-white dark:bg-background',
     striped: 'bg-white dark:bg-background',
@@ -101,51 +53,16 @@ export function DataTable<T extends { [key: string]: any }>({
   };
 
   return (
-    <div className={`w-full ${className} ${darkMode ? 'dark' : ''}`}>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
+    <div className={`w-full ${className}`}>
+      <div className="flex flex-col sm:flex-row-reverse sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
         <Input
           type="search"
           aria-label="Search table"
           placeholder={searchPlaceholder}
-          value={searchTerm}
+          defaultValue={filter?.search}
           onChange={handleSearchChange}
           className="w-full sm:w-64"
         />
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="pageSize" className="text-sm">
-            Rows per page:
-          </Label>
-          <select
-            id="pageSize"
-            aria-label="Rows per page"
-            value={pageSize}
-            onChange={handlePageSizeChange}
-            className="px-2 py-1 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-accent dark:bg-background dark:text-foreground"
-          >
-            {pageSizeOptions.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-          <Label htmlFor="pageNumber" className="text-sm">
-            Page:
-          </Label>
-          <Input
-            id="pageNumber"
-            type="number"
-            min={1}
-            max={totalPages}
-            value={currentPage}
-            onChange={handlePageChange}
-            onKeyDown={handlePageInputKeyDown}
-            aria-label="Page number"
-            className="w-16"
-          />
-          <span className="text-sm text-muted-foreground dark:text-foreground">
-            / {totalPages}
-          </span>
-        </div>
       </div>
       <div className="overflow-x-auto">
         <table
@@ -167,14 +84,14 @@ export function DataTable<T extends { [key: string]: any }>({
             </tr>
           </thead>
           <tbody className={`${rowVariantClasses[variant]}`}>
-            {currentPageData.length === 0 ? (
+            {data.data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length} className="px-4 py-6 text-center text-muted-foreground dark:text-foreground">
                   No data found.
                 </td>
               </tr>
             ) : (
-              currentPageData.map((item, idx) => (
+              data.data.map((item, idx) => (
                 <tr key={idx} tabIndex={0} className="focus:outline-none focus:bg-accent/20 dark:focus:bg-accent">
                   {columns.map((col) => (
                     <td key={String(col.key)} className="px-4 py-2 whitespace-nowrap text-sm text-foreground">
@@ -192,27 +109,53 @@ export function DataTable<T extends { [key: string]: any }>({
         role="navigation"
         aria-label="Pagination Navigation"
       >
-        <Button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-          aria-label="Previous page"
-          variant="outline"
-          size="sm"
-        >
-          Previous
-        </Button>
-        <span className="text-sm text-muted-foreground dark:text-foreground">
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages}
-          aria-label="Next page"
-          variant="outline"
-          size="sm"
-        >
-          Next
-        </Button>
+        <div className='flex items-center space-x-2'>
+          <Label htmlFor="pageSize" className="text-sm">
+            Rows per page:
+          </Label>
+          <select
+            id="pageSize"
+            aria-label="Rows per page"
+            value={data.per_page}
+            onChange={(e) => {
+              router.get(
+                data.path,
+                { search: filter?.search, perPage: e.target.value, page: data.current_page },
+                { preserveState: true })
+            }}
+            className="px-2 py-1 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-accent dark:bg-background dark:text-foreground"
+          >
+            {pageSizeOptions.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='flex items-center space-x-2'>
+          <span className="text-sm text-muted-foreground dark:text-foreground">
+            Page {data.current_page} of {data.last_page}
+          </span>
+          {
+            data.links.map(link => {
+              return <Button
+                onClick={() => {
+                  if (link.url) {
+                    router.get(
+                      link.url,
+                      { search: filter?.search, perPage: filter?.perPage ?? 10 },
+                      { preserveState: true })
+                  }
+                }}
+                disabled={!link.active}
+                aria-label="Previous page"
+                variant="outline"
+                size="sm"
+                dangerouslySetInnerHTML={{ __html: link.label }}
+              />
+            })
+          }
+        </div>
       </nav>
     </div>
   );
