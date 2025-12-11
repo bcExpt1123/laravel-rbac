@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,6 +21,8 @@ interface DataTableProps<T> {
   className?: string;
   searchPlaceholder?: string;
   filter: PaginatedFilter;
+  actions?: ReactNode;
+  renderRowActions?: (item: T) => ReactNode;
 }
 
 export function DataTable<T extends { [key: string]: any }>({
@@ -30,16 +32,17 @@ export function DataTable<T extends { [key: string]: any }>({
   variant = 'default',
   className = '',
   searchPlaceholder = 'Search...',
-  filter
+  filter,
+  actions,
+  renderRowActions
 }: DataTableProps<T>) {
   const handleSearchChange = useDebounce((e) => {
-    console.log(e.target.value)
-router.get(
+    router.get(
       data.path,
       { search: e.target.value, perPage: filter?.perPage, page: data.current_page },
       { preserveState: true })
   }, 300);
-  
+
   const variantClasses = {
     default: 'bg-white dark:bg-background',
     striped: 'bg-white dark:bg-background',
@@ -63,6 +66,14 @@ router.get(
           onChange={handleSearchChange}
           className="w-full sm:w-64"
         />
+        {
+          actions
+            ?
+            <div className='flex items-center space-x-2'>
+              {actions}
+            </div>
+            : <></>
+        }
       </div>
       <div className="overflow-x-auto">
         <table
@@ -81,6 +92,14 @@ router.get(
                   {col.header}
                 </th>
               ))}
+              {
+                renderRowActions
+                  ?
+                  <td>
+                    Actions
+                  </td>
+                  : <></>
+              }
             </tr>
           </thead>
           <tbody className={`${rowVariantClasses[variant]}`}>
@@ -98,6 +117,14 @@ router.get(
                       {col.render ? col.render(item) : String(item[col.key])}
                     </td>
                   ))}
+                  {
+                    renderRowActions
+                      ?
+                      <td>
+                        {renderRowActions(item)}
+                      </td>
+                      : <></>
+                  }
                 </tr>
               ))
             )}
@@ -139,6 +166,7 @@ router.get(
           {
             data.links.map(link => {
               return <Button
+                key={link.label}
                 onClick={() => {
                   if (link.url) {
                     router.get(

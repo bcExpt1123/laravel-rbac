@@ -38,13 +38,6 @@ class UserController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        $this->authorize('user-create');
-
-        return Inertia::render('user-create');
-    }
-
     public function store(Request $request)
     {
         $this->authorize('user-create');
