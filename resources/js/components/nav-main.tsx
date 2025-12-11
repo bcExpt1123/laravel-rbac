@@ -6,17 +6,26 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { resolveUrl } from '@/lib/utils';
-import { type NavItem } from '@/types';
+import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 
 export function NavMain({ items = [] }: { items: NavItem[] }) {
-    const page = usePage();
+    const page = usePage<SharedData>();
+    const userPermissions = page.props.auth?.permissions ?? [];
     return (
         <SidebarGroup className="px-2 py-0">
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarMenu>
-                {items.map((item) => (
-                    <SidebarMenuItem key={item.title}>
+                {items.map((item) => {
+                    const hasPermission =
+                        !item.permissions || item.permissions.length === 0
+                            ? true
+                            : item.permissions.some((p) =>
+                                  userPermissions.includes(p),
+                              );
+
+                    if (!hasPermission) return null;
+                    return <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton
                             asChild
                             isActive={page.url.startsWith(
@@ -30,7 +39,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
-                ))}
+                })}
             </SidebarMenu>
         </SidebarGroup>
     );
