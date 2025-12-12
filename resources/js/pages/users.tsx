@@ -1,23 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import { index as userList } from '@/routes/users/index';
-import { PaginatedData, SharedData, User, type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
+import { PaginatedData, PaginatedFilter, SharedData, User, type BreadcrumbItem } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
 import { DataTable } from '@/components/ui/data-table';
-import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Form } from '@inertiajs/react';
-import UserController from '@/actions/App/Http/Controllers/UserController';
-import { UserDialog } from '@/components/partial/user/dialog';
 import { CreateUser } from '@/components/partial/user/create';
 import { EditUser } from '@/components/partial/user/edit';
 
@@ -30,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface PageProps extends SharedData {
   users: PaginatedData<User>;
-  filters: any;
+  filters: PaginatedFilter;
 }
 
 export default function UserList() {

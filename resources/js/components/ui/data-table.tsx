@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ChangeEvent, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,7 +25,7 @@ interface DataTableProps<T> {
   renderRowActions?: (item: T) => ReactNode;
 }
 
-export function DataTable<T extends { [key: string]: any }>({
+export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   pageSizeOptions = [5, 10, 20, 50],
@@ -36,7 +36,7 @@ export function DataTable<T extends { [key: string]: any }>({
   actions,
   renderRowActions
 }: DataTableProps<T>) {
-  const handleSearchChange = useDebounce((e) => {
+  const handleSearchChange = useDebounce((e: ChangeEvent<HTMLInputElement>) => {
     router.get(
       data.path,
       { search: e.target.value, perPage: filter?.perPage, page: data.current_page },
