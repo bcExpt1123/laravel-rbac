@@ -27,7 +27,7 @@ const mainNavItems: NavItem[] = [
         title: 'User',
         href: userList(),
         icon: Users,
-        permissions: ['user-read']
+        permissions: ['view-user']
     },
 ];
 

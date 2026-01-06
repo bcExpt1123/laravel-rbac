@@ -16,14 +16,15 @@ class AdminPermissionsSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
-            'role-read',
-            'role-create',
-            'role-edit',
-            'role-delete',
-            'user-read',
-            'user-create',
-            'user-edit',
-            'user-delete',
+            'view-role',
+            'add-role',
+            'edit-role',
+            'delete-role',
+            'view-user',
+            'add-user',
+            'edit-user',
+            'edit-user-role',
+            'delete-user',
         ];
         foreach ($permissions as $permission) {
             $this->createWebPermission($permission);

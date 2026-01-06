@@ -14,7 +14,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $this->authorize('user-read');
+        $this->authorize('view-user');
 
         $users = User::query();
 
@@ -40,9 +40,9 @@ class UserController extends Controller
 
         // ✅ Permission check
         if ($isUpdate) {
-            $this->authorize('user-edit');
+            $this->authorize('edit-user');
         } else {
-            $this->authorize('user-create');
+            $this->authorize('add-user');
         }
 
         $user = $isUpdate
@@ -70,14 +70,14 @@ class UserController extends Controller
 
     public function create()
     {
-        $this->authorize('user-create');
+        $this->authorize('add-user');
 
         return Inertia::render('users/create');
     }
     
     public function edit(User $user)
     {
-        $this->authorize('user-edit');
+        $this->authorize('edit-user');
 
         return Inertia::render('users/edit', [
             'user' => $user,
@@ -86,7 +86,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $this->authorize('user-delete');
+        $this->authorize('delete-user');
 
         $user->delete();
 
