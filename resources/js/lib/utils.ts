@@ -16,3 +16,7 @@ export function isSameUrl(
 export function resolveUrl(url: NonNullable<InertiaLinkProps['href']>): string {
     return typeof url === 'string' ? url : url.url;
 }
+
+export function slug2label(slug: string): string {
+    return slug.replace(/(^\w|-\w)/g, m => m.replace('-', ' ').toUpperCase());
+}

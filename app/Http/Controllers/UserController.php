@@ -6,11 +6,9 @@ use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Http\Requests\Users\UserStoreRequest;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserController extends Controller
 {
-    use AuthorizesRequests;
 
     public function index(Request $request)
     {
@@ -21,7 +19,7 @@ class UserController extends Controller
         if ($search = $request->input('search')) {
             $users->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -74,7 +72,7 @@ class UserController extends Controller
 
         return Inertia::render('users/create');
     }
-    
+
     public function edit(User $user)
     {
         $this->authorize('edit-user');

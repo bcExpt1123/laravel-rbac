@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
-import { edit, index as userList } from '@/routes/users/index';
+import { edit, index as list } from '@/routes/users/index';
 import { SharedData, User, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { UserForm } from './form';
@@ -13,7 +13,7 @@ export default function UserEdition() {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       title: 'User List',
-      href: userList().url,
+      href: list().url,
     },
     {
       title: 'Edit an User',
@@ -23,7 +23,7 @@ export default function UserEdition() {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="User List" />
+      <Head title="Edit an User" />
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
         <UserForm btnLabel='Save' initialValue={props.user} />
       </div>

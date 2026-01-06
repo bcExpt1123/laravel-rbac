@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Form, useForm } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
 import InputError from "@/components/input-error";
 import { User } from "@/types";
 import UserController from "@/actions/App/Http/Controllers/UserController"

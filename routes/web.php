@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,7 +29,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->middleware('permission:edit-user')
             ->name('users.edit');
 
-        // ✅ ONE endpoint for create + update
         Route::post('/users/store', [UserController::class, 'store'])
             ->middleware(['permission:add-user|edit-user'])
             ->name('users.store');
@@ -36,6 +36,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/users/{user}', [UserController::class, 'destroy'])
             ->middleware('permission:delete-user')
             ->name('users.destroy');
+    });
+
+    Route::middleware(['permission:view-role'])->group(function () {
+        Route::get('/roles', [RoleController::class, 'index'])
+            ->name('roles.index');
+
+        Route::get('/roles/create', [RoleController::class, 'create'])
+            ->middleware('permission:add-role')
+            ->name('roles.create');
+
+        Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])
+            ->middleware('permission:edit-role')
+            ->name('roles.edit');
+
+        Route::post('/roles/store', [RoleController::class, 'store'])
+            ->middleware(['permission:add-role|edit-role'])
+            ->name('roles.store');
+
+        Route::delete('/roles/{role}', [RoleController::class, 'destroy'])
+            ->middleware('permission:delete-role')
+            ->name('roles.destroy');
     });
 });
 
