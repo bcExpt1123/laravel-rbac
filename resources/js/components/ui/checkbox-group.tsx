@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { slug2label } from "@/lib/utils";
 
 interface CheckboxGroupProps<T> {
   name: string;
