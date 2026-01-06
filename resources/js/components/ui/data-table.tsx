@@ -95,9 +95,12 @@ export function DataTable<T extends Record<string, unknown>>({
               {
                 renderRowActions
                   ?
-                  <td>
+                  <th
+                    scope="col"
+                    className="px-4 py-2 text-left text-xs font-medium text-muted-foreground dark:text-foreground uppercase tracking-wider select-none"
+                  >
                     Actions
-                  </td>
+                  </th>
                   : <></>
               }
             </tr>
@@ -120,7 +123,7 @@ export function DataTable<T extends Record<string, unknown>>({
                   {
                     renderRowActions
                       ?
-                      <td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-foreground">
                         {renderRowActions(item)}
                       </td>
                       : <></>
@@ -175,9 +178,9 @@ export function DataTable<T extends Record<string, unknown>>({
                       { preserveState: true })
                   }
                 }}
-                disabled={!link.active}
-                aria-label="Previous page"
-                variant="outline"
+                disabled={!link.url}
+                aria-label={link.label}
+                variant={data.current_page == link.page ? 'default' : 'outline'}
                 size="sm"
                 dangerouslySetInnerHTML={{ __html: link.label }}
               />

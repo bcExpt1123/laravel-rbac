@@ -17,21 +17,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     
     Route::middleware(['permission:user-read'])->group(function () {
-        Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+        Route::get('/users', [UserController::class, 'index'])
+            ->name('users.index');
 
-        Route::middleware(['permission:user-create'])->group(function () {
-            // Route::get('/users/create', [\App\Http\Controllers\UserController::class, 'create'])->name('users.create');
-            Route::post('/users', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
-        });
+        Route::get('/users/create', [UserController::class, 'create'])
+            ->middleware('permission:user-create')
+            ->name('users.create');
 
-        Route::middleware(['permission:user-edit'])->group(function () {
-            Route::get('/users/{user}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
-            Route::put('/users/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
-        });
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])
+            ->middleware('permission:user-edit')
+            ->name('users.edit');
 
-        Route::middleware(['permission:user-delete'])->group(function () {
-            Route::delete('/users/{user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.destroy');
-        });
+        // ✅ ONE endpoint for create + update
+        Route::post('/users/store', [UserController::class, 'store'])
+            ->middleware(['permission:user-create|user-edit'])
+            ->name('users.store');
+
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])
+            ->middleware('permission:user-delete')
+            ->name('users.destroy');
     });
 });
 

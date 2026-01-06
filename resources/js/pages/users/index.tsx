@@ -3,8 +3,8 @@ import { index as userList } from '@/routes/users/index';
 import { PaginatedData, PaginatedFilter, SharedData, User, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { DataTable } from '@/components/ui/data-table';
-import { CreateUser } from '@/components/partial/user/create';
-import { EditUser } from '@/components/partial/user/edit';
+import TextLink from '@/components/text-link';
+import { Button } from '@/components/ui/button';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -21,12 +21,11 @@ interface PageProps extends SharedData {
 export default function UserList() {
   const { props } = usePage<PageProps>();
   const { users, filters } = props;
-
+  
   const columns = [
     { key: "id", header: "ID" },
     { key: "name", header: "Name" },
-    { key: "email", header: "Email" },
-    { key: "actions", header: "Actions" }
+    { key: "email", header: "Email" }
   ];
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -37,9 +36,17 @@ export default function UserList() {
           columns={columns}
           variant="striped"
           filter={filters}
-          actions={<CreateUser/>}
+          actions={
+            <div>
+              <TextLink href="/users/create">
+                <Button>
+                  Add a new User
+                </Button>
+              </TextLink>
+              </div>
+          }
           renderRowActions={item => {
-            return <EditUser user={item}/>
+            return <TextLink href={`/users/${item.id}/edit`}>Edit</TextLink>
           }}
         />
       </div>
