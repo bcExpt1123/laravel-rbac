@@ -30,6 +30,24 @@ class UserStoreRequest extends FormRequest
                 'min:8',
                 'confirmed',
             ],
+            'roles' => [
+                'required_without:permissions',
+                'array',
+                'min:1',
+            ],
+            'roles.*' => [
+                'string',
+                'exists:roles,name',
+            ],
+            'permissions' => [
+                'required_without:roles',
+                'array',
+                'min:1',
+            ],
+            'permissions.*' => [
+                'string',
+                'exists:permissions,name',
+            ],
         ];
     }
 }

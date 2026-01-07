@@ -6,6 +6,8 @@ use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Http\Requests\Users\UserStoreRequest;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -56,6 +58,15 @@ class UserController extends Controller
 
         $user->save();
 
+        if ($request->roles) {
+            $roles = Role::whereIn('name', $request->roles)->pluck('id')->toArray();
+            $user->syncRoles($roles);
+        }
+        if ($request->permissions) {
+            $permissions = Permission::whereIn('name', $request->permissions)->pluck('id')->toArray();
+            $user->syncPermissions($permissions);
+        }
+
         return redirect()
             ->route('users.index')
             ->with(
@@ -70,15 +81,29 @@ class UserController extends Controller
     {
         $this->authorize('add-user');
 
-        return Inertia::render('users/create');
+        $roles = Role::all();
+        $permissions = Permission::all();
+
+        return Inertia::render('users/create', [
+            'roles' => $roles,
+            'permissions' => $permissions
+        ]);
     }
 
     public function edit(User $user)
     {
         $this->authorize('edit-user');
 
+        $user->load('roles');
+        $user->load('permissions');
+
+        $roles = Role::all();
+        $permissions = Permission::all();
+
         return Inertia::render('users/edit', [
             'user' => $user,
+            'roles' => $roles,
+            'permissions' => $permissions
         ]);
     }
 

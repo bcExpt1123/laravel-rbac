@@ -1,11 +1,13 @@
 import AppLayout from '@/layouts/app-layout';
 import { edit, index as list } from '@/routes/users/index';
-import { SharedData, User, type BreadcrumbItem } from '@/types';
+import { Permission, Role, SharedData, User, type BreadcrumbItem } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { UserForm } from './form';
 
 interface PageProps extends SharedData {
   user: User;
+  roles: Role[];
+  permissions: Permission[];
 }
 
 export default function UserEdition() {
@@ -25,7 +27,7 @@ export default function UserEdition() {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Edit an User" />
       <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-        <UserForm btnLabel='Save' initialValue={props.user} />
+        <UserForm btnLabel='Save' {...props} initialValue={props.user} />
       </div>
     </AppLayout>
   );

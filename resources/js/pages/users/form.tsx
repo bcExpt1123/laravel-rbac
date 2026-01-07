@@ -3,14 +3,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Form } from '@inertiajs/react';
 import InputError from "@/components/input-error";
-import { User } from "@/types";
+import { Permission, Role, User } from "@/types";
 import UserController from "@/actions/App/Http/Controllers/UserController"
+import { CheckboxGroup } from '@/components/ui/checkbox-group';
+import { slug2label } from '@/lib/utils';
 
 interface UserFormProps {
   btnLabel: string;
   initialValue?: User;
+  roles: Role[];
+  permissions: Permission[];
 }
 export const UserForm = (props: UserFormProps) => {
+  console.log(props)
   return <Form
     {...UserController.store.form()}
     options={{
@@ -65,6 +70,40 @@ export const UserForm = (props: UserFormProps) => {
             type="password"
             name="password_confirmation"
           />
+        </div>
+
+        {/* Roles */}
+        <div className='grid gap-2'>
+          <Label>Roles</Label>
+          <CheckboxGroup
+            className='grid gap-2'
+            name="roles"
+            options={props.roles}
+            valueKey="name"
+            labelKey="name"
+            renderLabel={label => {
+              return slug2label(label)
+            }}
+            defaultValue={props.initialValue?.roles?.map(p => p.name)}
+          />
+          <InputError message={errors.roles} />
+        </div>
+
+        {/* Permissions */}
+        <div className='grid gap-2'>
+          <Label>Permissions</Label>
+          <CheckboxGroup
+            className='grid gap-2'
+            name="permissions"
+            options={props.permissions}
+            valueKey="name"
+            labelKey="name"
+            renderLabel={label => {
+              return slug2label(label)
+            }}
+            defaultValue={props.initialValue?.permissions?.map(p => p.name)}
+          />
+          <InputError message={errors.permissions} />
         </div>
 
         {/* Submit */}
