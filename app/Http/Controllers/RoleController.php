@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Roles\RoleStoreRequest;
+use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
@@ -79,6 +80,7 @@ class RoleController extends Controller
 
         $permissions = Permission::all();
         $role->load('permissions');
+        $role->load('users');
 
         return Inertia::render('roles/edit', [
             'role' => $role,

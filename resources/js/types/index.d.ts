@@ -51,6 +51,7 @@ export interface Role {
     id: number;
     name: string;
     permissions: Permission[];
+    users: User[];
     [key: string]: unknown; // This allows for additional properties...
 }
 

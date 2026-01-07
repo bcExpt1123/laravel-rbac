@@ -5,7 +5,6 @@ import { Form } from '@inertiajs/react';
 import InputError from "@/components/input-error";
 import { Permission, Role } from "@/types";
 import RoleController from "@/actions/App/Http/Controllers/RoleController"
-import { Checkbox } from '@/components/ui/checkbox';
 import { slug2label } from '@/lib/utils';
 import { CheckboxGroup } from '@/components/ui/checkbox-group';
 
@@ -15,6 +14,7 @@ interface RoleFormProps {
   permissions: Permission[];
 }
 export const RoleForm = (props: RoleFormProps) => {
+  console.log(props)
   return <Form
     {...RoleController.store.form()}
     options={{
@@ -53,6 +53,18 @@ export const RoleForm = (props: RoleFormProps) => {
             defaultValue={props.initialValue?.permissions?.map(p => p.name)}
           />
           <InputError message={errors.permissions} />
+        </div>
+
+        {/* Users */}
+        <div className='grid gap-2'>
+          <Label>Users</Label>
+          <ul>
+            {
+              props.initialValue?.users?.map(u => {
+                return <li className='flex space-2'>- {u.email}</li>
+              })
+            }
+            </ul>
         </div>
 
         {/* Submit */}
