@@ -7,6 +7,7 @@ import { Permission, Role, User } from "@/types";
 import UserController from "@/actions/App/Http/Controllers/UserController"
 import { CheckboxGroup } from '@/components/ui/checkbox-group';
 import { slug2label } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth';
 
 interface UserFormProps {
   btnLabel: string;
@@ -15,6 +16,8 @@ interface UserFormProps {
   permissions: Permission[];
 }
 export const UserForm = (props: UserFormProps) => {
+  const { can } = useAuth();
+  const editable = can('edit-user') || can('add-user');
   return <Form
     {...UserController.store.form()}
     options={{
@@ -28,20 +31,20 @@ export const UserForm = (props: UserFormProps) => {
         {/* User ID */}
         {
           props.initialValue
-            ? <Input type='hidden' name='user_id' defaultValue={props.initialValue.id} />
+            ? <Input type='hidden' name='user_id' defaultValue={props.initialValue.id} disabled={!editable} />
             : <></>
         }
         {/* Name */}
         <div className="grid gap-2">
           <Label htmlFor="name">Name</Label>
-          <Input id="name" name="name" defaultValue={props.initialValue?.name} />
+          <Input id="name" name="name" defaultValue={props.initialValue?.name} disabled={!editable} />
           <InputError message={errors.name} />
         </div>
 
         {/* Email */}
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" name="email" defaultValue={props.initialValue?.email} />
+          <Input id="email" type="email" name="email" defaultValue={props.initialValue?.email} disabled={!editable} />
           <InputError message={errors.email} />
         </div>
 
@@ -55,6 +58,7 @@ export const UserForm = (props: UserFormProps) => {
             type="password"
             name="password"
             autoComplete="current-password"
+            disabled={!editable}
           />
           <InputError message={errors.password} />
         </div>
@@ -68,6 +72,7 @@ export const UserForm = (props: UserFormProps) => {
             id="password_confirmation"
             type="password"
             name="password_confirmation"
+            disabled={!editable}
           />
         </div>
 
@@ -84,6 +89,7 @@ export const UserForm = (props: UserFormProps) => {
               return slug2label(label)
             }}
             defaultValue={props.initialValue?.roles?.map(p => p.name)}
+            disabled={!editable}
           />
           <InputError message={errors.roles} />
         </div>
@@ -101,14 +107,19 @@ export const UserForm = (props: UserFormProps) => {
               return slug2label(label)
             }}
             defaultValue={props.initialValue?.permissions?.map(p => p.name)}
+            disabled={!editable}
           />
           <InputError message={errors.permissions} />
         </div>
 
         {/* Submit */}
-        <Button disabled={processing} type="submit">
-          {props.btnLabel}
-        </Button>
+        {
+          editable
+            ? <Button disabled={processing} type="submit">
+              {props.btnLabel}
+            </Button>
+            : <></>
+        }
       </div>
     )}
   </Form>

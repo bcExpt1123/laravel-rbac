@@ -7,6 +7,7 @@ import { Permission, Role } from "@/types";
 import RoleController from "@/actions/App/Http/Controllers/RoleController"
 import { slug2label } from '@/lib/utils';
 import { CheckboxGroup } from '@/components/ui/checkbox-group';
+import { useAuth } from '@/hooks/use-auth';
 
 interface RoleFormProps {
   btnLabel: string;
@@ -14,6 +15,8 @@ interface RoleFormProps {
   permissions: Permission[];
 }
 export const RoleForm = (props: RoleFormProps) => {
+  const { can } = useAuth();
+  const editable = can('edit-role') || can('add-role');
   return <Form
     {...RoleController.store.form()}
     options={{
@@ -27,13 +30,13 @@ export const RoleForm = (props: RoleFormProps) => {
         {/* Role ID */}
         {
           props.initialValue
-            ? <Input type='hidden' name='role_id' defaultValue={props.initialValue.id} />
+            ? <Input type='hidden' name='role_id' defaultValue={props.initialValue.id} disabled={!editable} />
             : <></>
         }
         {/* Name */}
         <div className="grid gap-2">
           <Label htmlFor="name">Name</Label>
-          <Input id="name" name="name" defaultValue={props.initialValue?.name} />
+          <Input id="name" name="name" defaultValue={props.initialValue?.name} disabled={!editable} />
           <InputError message={errors.name} />
         </div>
 
@@ -50,6 +53,7 @@ export const RoleForm = (props: RoleFormProps) => {
               return slug2label(label)
             }}
             defaultValue={props.initialValue?.permissions?.map(p => p.name)}
+            disabled={!editable}
           />
           <InputError message={errors.permissions} />
         </div>
@@ -63,13 +67,17 @@ export const RoleForm = (props: RoleFormProps) => {
                 return <li className='flex space-2'>- {u.email}</li>
               })
             }
-            </ul>
+          </ul>
         </div>
 
         {/* Submit */}
-        <Button disabled={processing} type="submit">
-          {props.btnLabel}
-        </Button>
+        {
+          editable
+            ? <Button disabled={processing} type="submit">
+              {props.btnLabel}
+            </Button>
+            : <></>
+        }
       </div>
     )}
   </Form>

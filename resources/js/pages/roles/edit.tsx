@@ -17,7 +17,7 @@ export default function RoleEdition() {
       href: list().url,
     },
     {
-      title: 'Edit a Role',
+      title: props.role.name,
       href: edit(props.role.id).url,
     },
   ];

@@ -25,8 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->middleware('permission:add-user')
             ->name('users.create');
 
-        Route::get('/users/{user}/edit', [UserController::class, 'edit'])
-            ->middleware('permission:edit-user')
+        Route::get('/users/{user}', [UserController::class, 'edit'])
+            // ->middleware('permission:edit-user')
             ->name('users.edit');
 
         Route::post('/users/store', [UserController::class, 'store'])
@@ -46,8 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->middleware('permission:add-role')
             ->name('roles.create');
 
-        Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])
-            ->middleware('permission:edit-role')
+        Route::get('/roles/{role}', [RoleController::class, 'edit'])
+            // ->middleware('permission:edit-role')
             ->name('roles.edit');
 
         Route::post('/roles/store', [RoleController::class, 'store'])

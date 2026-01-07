@@ -10,6 +10,7 @@ interface CheckboxGroupProps<T> {
   defaultValue?: string[];
   className?: string;
   renderLabel?: (i: string) => string;
+  disabled?: boolean;
 }
 
 export function CheckboxGroup<T>({
@@ -19,7 +20,8 @@ export function CheckboxGroup<T>({
   labelKey,
   defaultValue = [],
   className,
-  renderLabel
+  renderLabel,
+  disabled
 }: CheckboxGroupProps<T>) {
   const [values, setValues] = useState<string[]>(defaultValue);
 
@@ -43,6 +45,7 @@ export function CheckboxGroup<T>({
               id={`${name}-${value}`}
               checked={checked}
               onCheckedChange={() => toggle(value)}
+              disabled={disabled}
             />
             <Label className="font-normal" htmlFor={`${name}-${value}`}>
               {renderLabel ? renderLabel(String(option[labelKey])) : String(option[labelKey])}

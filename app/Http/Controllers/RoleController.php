@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Roles\RoleStoreRequest;
-use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
@@ -76,7 +75,7 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
-        $this->authorize('edit-role');
+        // $this->authorize('edit-role');
 
         $permissions = Permission::all();
         $role->load('permissions');

@@ -5,6 +5,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { DataTable } from '@/components/ui/data-table';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
+import { useAuthPage } from '@/hooks/use-auth-page';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -19,9 +20,9 @@ interface PageProps extends SharedData {
 }
 
 export default function RoleList() {
-  const { props } = usePage<PageProps>();
+  const { props, can } = useAuthPage<PageProps>();
   const { roles, filters } = props;
-  
+
   const columns = [
     { key: "id", header: "ID" },
     { key: "name", header: "Name" },
@@ -37,15 +38,26 @@ export default function RoleList() {
           filter={filters}
           actions={
             <div>
-              <TextLink href="/roles/create">
-                <Button>
-                  Add a new Role
-                </Button>
-              </TextLink>
-              </div>
+              {
+                can('add-role')
+                  ? <TextLink href="/roles/create">
+                    <Button>
+                      Add a new Role
+                    </Button>
+                  </TextLink>
+                  : <></>
+              }
+
+            </div>
           }
           renderRowActions={item => {
-            return <TextLink href={`/roles/${item.id}/edit`}>Edit</TextLink>
+            return <TextLink href={`/roles/${item.id}`}>
+              {
+                can('edit-role')
+                  ? 'Edit'
+                  : 'View'
+              }
+            </TextLink>
           }}
         />
       </div>

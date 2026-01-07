@@ -18,7 +18,7 @@ export default function UserEdition() {
       href: list().url,
     },
     {
-      title: 'Edit an User',
+      title: props.user.email,
       href: edit(props.user.id).url,
     },
   ];

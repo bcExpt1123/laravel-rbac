@@ -1,11 +1,9 @@
 import { SharedData } from "@/types";
-import { usePage } from "@inertiajs/react";
+import { useAuthPage } from "./use-auth-page";
 
-export function useAuth() {
-  const page = usePage<SharedData>();
+export function useAuth<T extends SharedData>() {
+  const page = useAuthPage<T>();
   return {
-    can: (permission: string): boolean => {
-      return page.props.auth.permissions.includes(permission)
-    }
+    can: page.can
   }
 }
