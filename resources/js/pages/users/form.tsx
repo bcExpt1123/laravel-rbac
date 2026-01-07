@@ -15,7 +15,6 @@ interface UserFormProps {
   permissions: Permission[];
 }
 export const UserForm = (props: UserFormProps) => {
-  console.log(props)
   return <Form
     {...UserController.store.form()}
     options={{

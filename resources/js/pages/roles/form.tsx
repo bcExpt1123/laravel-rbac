@@ -14,7 +14,6 @@ interface RoleFormProps {
   permissions: Permission[];
 }
 export const RoleForm = (props: RoleFormProps) => {
-  console.log(props)
   return <Form
     {...RoleController.store.form()}
     options={{
