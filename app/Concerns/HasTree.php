@@ -42,9 +42,11 @@ trait HasTree
      */
     public function descendants(): Collection
     {
-        return $this->children->flatMap(function ($child) {
-            return collect([$child])->merge($child->descendants());
-        });
+        $items = $this->children->flatMap(function ($child) {
+            return $child->descendants()->prepend($child);
+        })->all();
+
+        return new Collection($items);
     }
 
     /**
@@ -68,7 +70,10 @@ trait HasTree
      */
     public function getTreePath(): Collection
     {
-        return collect($this->getTreePathNode($this))->reverse()->values();
+        return new Collection(
+            array_reverse($this->getTreePathNode($this))
+        );
+        // return collect($this->getTreePathNode($this))->reverse()->values();
     }
 
     protected function getTreePathNode($model, $path = []): array
@@ -87,7 +92,10 @@ trait HasTree
      */
     public function getAllParents(): Collection
     {
-        return $this->parent ? collect($this->getTreePathNode($this->parent)) : collect();
+        return $this->parent
+            ? new Collection($this->getTreePathNode($this->parent))
+            : new Collection();
+        // return $this->parent ? collect($this->getTreePathNode($this->parent)) : collect();
     }
 
     /**

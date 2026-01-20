@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Concerns;
 
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Tests\Models\Category;
 
@@ -12,11 +13,10 @@ class HasTreeTest extends TestCase
         parent::setUp();
 
         // Run migration
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        $this->artisan('migrate', ['--database' => 'sqlite'])->run();
+        $this->runTestMigrations();
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_parent_child_relationship()
     {
         $parent = Category::create(['title' => 'Parent']);
@@ -26,7 +26,7 @@ class HasTreeTest extends TestCase
         $this->assertCount(1, $parent->children);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_descendants_recursively()
     {
         $root = Category::create(['title' => 'Root']);
@@ -40,7 +40,7 @@ class HasTreeTest extends TestCase
         $this->assertTrue($descendants->contains($grandchild));
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_tree_path()
     {
         $root = Category::create(['title' => 'Root']);
@@ -55,7 +55,7 @@ class HasTreeTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_all_parents()
     {
         $root = Category::create(['title' => 'Root']);
@@ -68,7 +68,7 @@ class HasTreeTest extends TestCase
         $this->assertEquals(['Child', 'Root'], $parents->pluck('title')->toArray());
     }
 
-    /** @test */
+    #[Test]
     public function it_excludes_self_and_descendants_from_possible_parents()
     {
         $root = Category::create(['title' => 'Root']);
@@ -84,7 +84,7 @@ class HasTreeTest extends TestCase
         $this->assertArrayHasKey($other->id, $options);
     }
 
-    /** @test */
+    #[Test]
     public function it_reassigns_children_when_deleting_parent()
     {
         $root = Category::create(['title' => 'Root']);
@@ -97,7 +97,7 @@ class HasTreeTest extends TestCase
         $this->assertEquals($root->id, $child->parent_id);
     }
 
-    /** @test */
+    #[Test]
     public function root_scope_returns_only_root_nodes()
     {
         $root = Category::create(['title' => 'Root']);
@@ -109,7 +109,7 @@ class HasTreeTest extends TestCase
         $this->assertEquals('Root', $roots->first()->title);
     }
 
-    /** @test */
+    #[Test]
     public function include_children_count_scope_works()
     {
         $root = Category::create(['title' => 'Root']);
