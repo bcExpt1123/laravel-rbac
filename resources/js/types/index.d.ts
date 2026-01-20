@@ -61,6 +61,24 @@ export interface Permission {
     [key: string]: unknown; // This allows for additional properties...
 }
 
+export interface AuditLog<T> {
+    id: number;
+    auditable_type: string;
+    auditable_id: number;
+    created_at: Date;
+    event: string;
+    ip_address: string;
+    metadata: unknown;
+    new_values: T;
+    old_values: T;
+    tenant_id: unknown;
+    url: string;
+    user: User;
+    user_agent: string;
+    user_id: number;
+    [key: string]: unknown;
+}
+
 export interface PaginatedData<T> {
     current_page: number;
     data: T[];

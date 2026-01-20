@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/roles/{role}', [RoleController::class, 'destroy'])
             ->middleware('permission:delete-role')
             ->name('roles.destroy');
+    });
+
+    Route::middleware(['permission:view-audit-log'])->group(function () {
+        Route::get('/audit-log', [AuditLogController::class, 'index'])
+            ->name('audit-log.index');
+
+        Route::get('/audit-log/{auditLog}', [AuditLogController::class, 'show'])
+            ->name('audit-log.show');
     });
 });
 

@@ -13,9 +13,10 @@ import {
 import { dashboard } from '@/routes';
 import { index as userList } from '@/routes/users/index';
 import { index as roleList } from '@/routes/roles/index';
+import { index as auditList } from '@/routes/audit-log/index';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Users, Lock } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, Users, Lock, Logs } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -35,6 +36,12 @@ const mainNavItems: NavItem[] = [
         href: roleList(),
         icon: Lock,
         permissions: ['view-role']
+    },
+    {
+        title: 'Audit Logs',
+        href: auditList(),
+        icon: Logs,
+        permissions: ['view-audit-log']
     },
 ];
 

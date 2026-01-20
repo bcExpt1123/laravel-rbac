@@ -22,6 +22,7 @@ interface DataTableProps<T> {
   searchPlaceholder?: string;
   filter: PaginatedFilter;
   actions?: ReactNode;
+  hideSearch?: boolean;
   renderRowActions?: (item: T) => ReactNode;
 }
 
@@ -34,6 +35,7 @@ export function DataTable<T extends Record<string, unknown>>({
   searchPlaceholder = 'Search...',
   filter,
   actions,
+  hideSearch,
   renderRowActions
 }: DataTableProps<T>) {
   const handleSearchChange = useDebounce((e: ChangeEvent<HTMLInputElement>) => {
@@ -58,14 +60,18 @@ export function DataTable<T extends Record<string, unknown>>({
   return (
     <div className={`w-full ${className}`}>
       <div className="flex flex-col sm:flex-row-reverse sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
-        <Input
-          type="search"
-          aria-label="Search table"
-          placeholder={searchPlaceholder}
-          defaultValue={filter?.search}
-          onChange={handleSearchChange}
-          className="w-full sm:w-64"
-        />
+        {
+          hideSearch
+          ? <></>
+          : <Input
+              type="search"
+              aria-label="Search table"
+              placeholder={searchPlaceholder}
+              defaultValue={filter?.search}
+              onChange={handleSearchChange}
+              className="w-full sm:w-64"
+            />
+        }
         {
           actions
             ?
