@@ -4,10 +4,11 @@ import { Separator } from '@/components/ui/separator';
 import { cn, isSameUrl, resolveUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
+import { index } from '@/routes/children';
 import { show } from '@/routes/two-factor';
 import { edit as editPassword } from '@/routes/user-password';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
@@ -15,6 +16,12 @@ const sidebarNavItems: NavItem[] = [
         title: 'Profile',
         href: edit(),
         icon: null,
+    },
+    {
+        title: 'Children',
+        href: index(),
+        icon: null,
+        permissions: ['is-parent']
     },
     {
         title: 'Password',
@@ -34,6 +41,10 @@ const sidebarNavItems: NavItem[] = [
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
+
+    const page = usePage<SharedData>();
+    const userPermissions = page.props.auth?.permissions ?? [];
+
     // When server-side rendering, we only render the layout on the client...
     if (typeof window === 'undefined') {
         return null;
@@ -51,8 +62,17 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav className="flex flex-col space-y-1 space-x-0">
-                        {sidebarNavItems.map((item, index) => (
-                            <Button
+                        {sidebarNavItems.map((item, index) => {
+                            const hasPermission =
+                                !item.permissions || item.permissions.length === 0
+                                    ? true
+                                    : item.permissions.some((p) =>
+                                        userPermissions.includes(p),
+                                    );
+
+                            if (!hasPermission) return null;
+
+                            return <Button
                                 key={`${resolveUrl(item.href)}-${index}`}
                                 size="sm"
                                 variant="ghost"
@@ -71,7 +91,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                     {item.title}
                                 </Link>
                             </Button>
-                        ))}
+                        })}
                     </nav>
                 </aside>
 

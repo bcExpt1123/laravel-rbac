@@ -52,4 +52,17 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    public function children()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'parent_children',
+            'parent_id',
+            'child_id'
+        )
+        ->using(ParentChild::class)
+        ->withTimestamps()
+        ->wherePivotNull('deleted_at');
+    }
 }
