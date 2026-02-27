@@ -26,6 +26,10 @@ class AdminPermissionsSeeder extends Seeder
             'edit-user-role',
             'delete-user',
             'view-audit-log',
+            'is-admin',
+            'is-dancer',
+            'is-parent',
+            'is-child'
         ];
         foreach ($permissions as $permission) {
             $this->createWebPermission($permission);

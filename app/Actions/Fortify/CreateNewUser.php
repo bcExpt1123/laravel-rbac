@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
+use Spatie\Permission\Models\Permission;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -30,10 +31,22 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
         ])->validate();
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
         ]);
+
+        $permissions = [];
+        if ($input['is_parent'] ?? false) {
+            $permissions[] = 'is-parent';
+        } else {
+            $permissions[] = 'is-dancer';
+        }
+
+        $permissions = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
+        $user->syncPermissions($permissions);
+        
+        return $user;
     }
 }
